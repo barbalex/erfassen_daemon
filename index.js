@@ -19,9 +19,9 @@ consr run = async() => {
   const userDbs = filter(dbs, (db)=>db.substr(0, 5) === 'user_')
 
   listenToChangesIn_usersDb(nano)
-  listenToChangesInUsersDbs(userDbs)
-  listenToChangesInMessageDb()
-  listenToDbChanges()
+  listenToChangesInUsersDbs(nano, userDbs)
+  listenToChangesInMessageDb(nano)
+  listenToDbChanges(nano)
 }
 
 run()

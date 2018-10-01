@@ -4,17 +4,9 @@
 
 'use strict'
 
-var couchPassfile = require('../couchpass.json'),
-  dbUrl =
-    'http://' +
-    couchPassfile.user +
-    ':' +
-    couchPassfile.pass +
-    '@127.0.0.1:5984',
-  nano = require('nano')(dbUrl),
-  handleChangesInMessageDb = require('./handleChangesInMessageDb')
+const handleChangesInMessageDb = require('./handleChangesInMessageDb')
 
-module.exports = function() {
+module.exports = function(nano) {
   var feed
 
   if (!GLOBAL.erfassen_messages) {
