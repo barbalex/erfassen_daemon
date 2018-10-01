@@ -1,8 +1,7 @@
 'use strict'
 
-const { user, pass } = require('./couchpass.json')
-const dbUrl = `http://${user}:${pass}@127.0.0.1:5984`
-const nano = require('nano')(dbUrl)
+const dbUrl = require('./src/dbUrl')
+const nano = require('nano')(dbUrl())
 const filter = require('lodash/filter')
 
 const listenToChangesIn_usersDb = require('./src/listenToChangesIn_usersDb')
@@ -19,7 +18,7 @@ consr run = async() => {
   }
   const userDbs = filter(dbs, (db)=>db.substr(0, 5) === 'user_')
 
-  listenToChangesIn_usersDb()
+  listenToChangesIn_usersDb(nano)
   listenToChangesInUsersDbs(userDbs)
   listenToChangesInMessageDb()
   listenToDbChanges()

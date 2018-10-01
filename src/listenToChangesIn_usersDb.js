@@ -5,19 +5,14 @@
 
 'use strict'
 
-var couchPassfile = require('../couchpass.json'),
-  dbUrl = 'http://' + couchPassfile.user + ':' + couchPassfile.pass + '@127.0.0.1:5984',
-  nano = require('nano')(dbUrl),
-  handleChangesIn_usersDb = require('./handleChangesIn_usersDb')
+const handleChangesIn_usersDb = require('./handleChangesIn_usersDb')
 
-module.exports = function () {
-  var feed
-
+module.exports = nano => {
   if (!GLOBAL._users) {
-    feed = nano.use('_users').follow({
+    const feed = nano.use('_users').follow({
       since: 'now',
       live: true,
-      include_docs: true
+      include_docs: true,
     })
     feed.on('change', handleChangesIn_usersDb)
     feed.follow()
