@@ -1,0 +1,22 @@
+{
+  "name": "erfassen_daemon",
+  "version": "0.1.0",
+  "description": "watches changes stream of erfassen. Generates databases per project and databeses per user",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "oi_pg"
+  },
+  "author": "Alexander Gabriel",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "4.17.11",
+    "nano": "7.1.0"
+  },
+  "devDependencies": {
+    "prettier": "1.14.3"
+  }
+}
