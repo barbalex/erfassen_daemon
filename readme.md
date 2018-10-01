@@ -1,4 +1,4 @@
-#erfassen Hintergrund-Daemon
+# erfassen backend-daemon
 
 
-Dieses Tool managed Benutzer- und Projekt-Datenbanken von [erfassen](https://github.com/barbalex/erfassen) und den Zugriff darauf
+Manages user- and project-db's of [erfassen](https://github.com/barbalex/erfassen)
