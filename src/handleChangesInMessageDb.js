@@ -7,15 +7,9 @@
 
 'use strict'
 
-var couchPassfile = require('../couchpass.json'),
-  dbUrl =
-    'http://' +
-    couchPassfile.user +
-    ':' +
-    couchPassfile.pass +
-    '@127.0.0.1:5984',
-  nano = require('nano')(dbUrl),
-  createProjectDb = require('./createProjectDb')
+const dbUrl = require('./dbUrl')
+const nano = require('nano')(dbUrl())
+const createProjectDb = require('./createProjectDb')
 
 module.exports = function(change) {
   var changeDoc = change.doc,
@@ -23,7 +17,7 @@ module.exports = function(change) {
 
   switch (changeDoc.type) {
     case 'projectAdd':
-      createProjectDb(changeDoc.projectName)
+      createProjectDb(nano, changeDoc.projectName)
       // now delete the message
       oiDb.destroy(changeDoc, changeDoc._rev, function(error) {
         if (error) {
