@@ -12,14 +12,14 @@ const nano = require('nano')(dbUrl())
 const createProjectDb = require('./createProjectDb')
 
 module.exports = function(change) {
-  var changeDoc = change.doc,
-    oiDb = nano.use('erfassen_messages')
+  const { doc } = change
+  const mDb = nano.use('erfassen_messages')
 
-  switch (changeDoc.type) {
+  switch (doc.type) {
     case 'projectAdd':
-      createProjectDb(nano, changeDoc.projectName)
+      createProjectDb(nano, doc.projectName)
       // now delete the message
-      oiDb.destroy(changeDoc, changeDoc._rev, function(error) {
+      mDb.destroy(doc, doc._rev, function(error) {
         if (error) {
           return console.log(
             'error removing doc after ordering to create project',
@@ -27,7 +27,7 @@ module.exports = function(change) {
           )
         }
 
-        console.log('removed doc after ordering to create project', changeDoc)
+        console.log('removed doc after ordering to create project', doc)
       })
       break
   }

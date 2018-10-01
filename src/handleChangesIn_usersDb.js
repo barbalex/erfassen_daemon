@@ -10,40 +10,34 @@
 
 'use strict'
 
-var couchPassfile = require('../couchpass.json'),
-  dbUrl =
-    'http://' +
-    couchPassfile.user +
-    ':' +
-    couchPassfile.pass +
-    '@127.0.0.1:5984',
-  nano = require('nano')(dbUrl),
-  _ = require('underscore'),
-  _usersDb = nano.use('_users'),
-  removeUsersProjectDbs = require('./removeUsersProjectDbs'),
-  deleteDatabase = require('./deleteDatabase'),
-  listenToChangesInUsersDbs = require('./listenToChangesInUsersDbs'),
-  createSecurityDoc = require('./createSecurityDoc'),
-  getUserDbName = require('./getUserDbName')
+const dbUrl = require('./dbUrl')
+const nano = require('nano')(dbUrl())
+const without = require('lodash/without')
+const contains = require('lodash/contains')
+
+const _usersDb = nano.use('_users')
+const removeUsersProjectDbs = require('./removeUsersProjectDbs')
+const deleteDatabase = require('./deleteDatabase')
+const listenToChangesInUsersDbs = require('./listenToChangesInUsersDbs')
+const createSecurityDoc = require('./createSecurityDoc')
+const getUserDbName = require('./getUserDbName')
 
 function onCreatedUserDb(userName, userDbName, userDoc) {
-  var securityDoc, userDb
-
-  userDb = nano.use(userDbName)
+  const userDb = nano.use(userDbName)
 
   // set up read permissions for the user
   // create security doc
   // dont check if it exist yet - it always exists
   // just make sure it's set correctly
-  securityDoc = createSecurityDoc(userName, null, couchPassfile.user)
-  userDb.insert(securityDoc, '_security', function(error) {
-    if (error) {
-      return console.log(
-        'handleChangesIn_usersDb: error setting _security in new user DB: ',
-        error,
-      )
-    }
-  })
+  const securityDoc = createSecurityDoc(userName, null, couchPassfile.user)
+  try {
+    await  userDb.insert(securityDoc, '_security')
+  } catch (error) {
+    return console.log(
+      'handleChangesIn_usersDb: error setting _security in new user DB: ',
+      error,
+    )
+  }
 
   // start listening to changes
   // start before inserting doc so the changes in roles are watched
@@ -57,44 +51,31 @@ function onCreatedUserDb(userName, userDbName, userDoc) {
   delete userDoc.password_scheme
 
   // make sure userDoc does not exist yet
-  userDb.get(userDoc._id, function(error, doc) {
-    // var rolesBefore
-
-    if (error) {
-      if (error.statusCode === 404) {
-        // userDoc does not exist yet
-        userDb.insert(userDoc, function(error) {
-          if (error) {
-            return console.log(
-              'handleChangesIn_usersDb: error adding user doc to new user DB ' +
-                userDbName +
-                ': ',
-              error,
-            )
-          }
-          // console.log('handleChangesIn_usersDb: created user doc of new user DB ' + userDbName)
-        })
-      } else {
-        console.log(
-          'handleChangesIn_usersDb: error getting user doc of new user DB ' +
+  let doc
+  try {
+    doc = userDb.get(userDoc._id)
+  } catch (error) {
+    if (error.statusCode === 404) {
+      // userDoc does not exist yet
+      try {
+        await  userDb.insert(userDoc)
+      } catch (error) {
+        return console.log(
+          'handleChangesIn_usersDb: error adding user doc to new user DB ' +
             userDbName +
             ': ',
           error,
         )
       }
     } else {
-      // add roles
-      // nope, don't - this starts an endles loop because handleChangesInUserDb does this too
-      // console.log('handleChangesIn_usersDb: user doc for ' + userDbName + ' exists already')
-      /*rolesBefore = doc.roles
-      doc.roles   = _.union(doc.roles, userDoc.roles)
-      if (rolesBefore.length !== doc.roles) {
-          userDb.insert(doc, function (error) {
-              if (error) { return console.log('handleChangesIn_usersDb: error updating user doc in new user DB ' + userDbName + ': ', error); }
-          })
-      }*/
+      console.log(
+        'handleChangesIn_usersDb: error getting user doc of new user DB ' +
+          userDbName +
+          ': ',
+        error,
+      )
     }
-  })
+  }
 }
 
 module.exports = function(change) {
@@ -167,7 +148,7 @@ module.exports = function(change) {
                 error,
               )
             }
-            doc.members.names = _.without(doc.members.names, userName)
+            doc.members.names = without(doc.members.names, userName)
           })
         }
       })
@@ -190,7 +171,7 @@ module.exports = function(change) {
           )
         }
 
-        if (!_.contains(dbNames, userDbName)) {
+        if (!contains(dbNames, userDbName)) {
           // this user has no uderDb yet
           // a new user was created
           // create a new user db if it does not exist yet
