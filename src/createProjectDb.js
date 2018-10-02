@@ -23,7 +23,7 @@ module.exports = (nano, projectDbName) => {
   } catch (error) {
     return console.log('error creating new db ' + projectDbName + ':', error)
   }
-  console.log('created new db: ', projectDbName)
+  console.log('created new db:', projectDbName)
 
     // set up permissions for this role
     const securityDoc = createSecurityDoc(
@@ -31,12 +31,12 @@ module.exports = (nano, projectDbName) => {
       projectDbName,
       couchPassfile.user,
     )
-    nano.use(projectDbName).insert(securityDoc, '_security', function(error) {
-      if (error) {
-        return console.log(
-          'error setting _security in new db ' + projectDbName + ': ',
-          error,
-        )
-      }
-    })
+    try {
+      await nano.use(projectDbName).insert(securityDoc)
+    } catch (error) {
+      return console.log(
+        `error setting _security in new db ${projectDbName}:`,
+        error,
+      )
+    }
 }

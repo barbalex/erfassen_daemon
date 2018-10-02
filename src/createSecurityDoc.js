@@ -10,27 +10,13 @@
 
 var couchPassfile = require('../couchpass.json')
 
-module.exports = function (names, roles, admin) {
-  var securityDoc
-
-  admin = admin || couchPassfile.user
-  securityDoc = {
-    admins: {
-      names: [admin],
-      roles: []
-    },
-    members: {
-      names: [],
-      roles: []
-    }
-  }
-
-  if (names) {
-    securityDoc.members.names.push(names)
-  }
-  if (roles) {
-    securityDoc.members.roles.push(roles)
-  }
-
-  return securityDoc
-}
+module.exports = (names = [], roles = [], admin = couchPassfile.user) => ({
+  admins: {
+    names: [admin],
+    roles: [],
+  },
+  members: {
+    names: [...names],
+    roles: [...roles],
+  },
+})
