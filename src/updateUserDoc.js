@@ -10,43 +10,59 @@
 'use strict'
 
 var couchPassfile = require('../couchpass.json'),
-  dbUrl = 'http://' + couchPassfile.user + ':' + couchPassfile.pass + '@127.0.0.1:5984',
+  dbUrl =
+    'http://' +
+    couchPassfile.user +
+    ':' +
+    couchPassfile.pass +
+    '@127.0.0.1:5984',
   nano = require('nano')(dbUrl),
   _usersDb = nano.use('_users'),
   _ = require('underscore'),
   removeUsersProjectDbs = require('./removeUsersProjectDbs'),
   createProjectDb = require('./createProjectDb')
 
-module.exports = function (newDoc, oldDoc) {
-  var rolesAdded,
-    rolesRemoved,
-    userName
+module.exports = function(newDoc, oldDoc) {
+  var rolesAdded, rolesRemoved, userName
 
-  if ((oldDoc && newDoc && oldDoc.roles && newDoc.roles && oldDoc.roles !== newDoc.roles) || (!oldDoc && newDoc && newDoc.roles)) {
+  if (
+    (oldDoc &&
+      newDoc &&
+      oldDoc.roles &&
+      newDoc.roles &&
+      oldDoc.roles !== newDoc.roles) ||
+    (!oldDoc && newDoc && newDoc.roles)
+  ) {
     // roles have changed
     // or no oldDoc, so assume they have changed
     // always update roles in _users DB
-    _usersDb.get(newDoc._id, function (error, userDoc) {
-      if (error) { console.log('error getting user from _users db: ', error) }
+    _usersDb.get(newDoc._id, function(error, userDoc) {
+      if (error) {
+        console.log('error getting user from _users db: ', error)
+      }
 
       userDoc.roles = newDoc.roles
-      _usersDb.insert(userDoc, function (error) {
-        if (error) { console.log('error updating user in _users db: ', error) }
+      _usersDb.insert(userDoc, function(error) {
+        if (error) {
+          console.log('error updating user in _users db: ', error)
+        }
 
-        rolesAdded = oldDoc ? _.difference(newDoc.roles, oldDoc.roles) : newDoc.roles
+        rolesAdded = oldDoc
+          ? _.difference(newDoc.roles, oldDoc.roles)
+          : newDoc.roles
         rolesRemoved = oldDoc ? _.difference(oldDoc.roles, newDoc.roles) : []
 
         console.log('handleChangesInUserDb: rolesAdded: ', rolesAdded)
         console.log('handleChangesInUserDb: rolesRemoved: ', rolesRemoved)
 
         if (rolesAdded) {
-          _.each(rolesAdded, function (roleAdded) {
+          _.each(rolesAdded, function(roleAdded) {
             createProjectDb(roleAdded)
           })
         }
         if (rolesRemoved) {
           userName = newDoc.name
-          removeUsersProjectDbs(userName, rolesRemoved)
+          removeUsersProjectDbs(nano, userName, rolesRemoved)
         }
       })
     })

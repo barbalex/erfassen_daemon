@@ -126,10 +126,10 @@ module.exports = function(change) {
 
           // remove the role from all the users docs
           // remove projects and their db's that only had this user
-          removeUsersProjectDbs(userName, userProjects)
+          removeUsersProjectDbs(nano, userName, userProjects)
 
           // delete this user's database
-          deleteDatabase(userDbName)
+          deleteDatabase(nano, userDbName)
 
           // stop listening to changes to userDb
           if (GLOBAL[userDbName]) {

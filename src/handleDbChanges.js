@@ -8,20 +8,22 @@
 'use strict'
 
 var couchPassfile = require('../couchpass.json'),
-  dbUrl = 'http://' + couchPassfile.user + ':' + couchPassfile.pass + '@127.0.0.1:5984',
+  dbUrl =
+    'http://' +
+    couchPassfile.user +
+    ':' +
+    couchPassfile.pass +
+    '@127.0.0.1:5984',
   nano = require('nano')(dbUrl),
   _ = require('underscore'),
   _usersDb = nano.use('_users'),
   getUserDbName = require('./getUserDbName'),
   removeUsersProjectDbs = require('./removeUsersProjectDbs')
 
-module.exports = function (change) {
+module.exports = function(change) {
   // console.log('handleDbChanges: db change: ', change)
 
-  var isUserDb,
-    dbName,
-    projects,
-    userName
+  var isUserDb, dbName, projects, userName
 
   dbName = change.db_name
   isUserDb = dbName.substring(0, 5) === 'user_'
@@ -33,20 +35,23 @@ module.exports = function (change) {
     console.log('handleDbChanges: db change: ', change)
 
     if (GLOBAL[dbName]) {
-      console.log('handleDbChanges: Removing feed following changes in ' + dbName)
+      console.log(
+        'handleDbChanges: Removing feed following changes in ' + dbName,
+      )
       // stop feed following the db
       GLOBAL[dbName].stop()
     }
     if (isUserDb) {
       // if isUserDb remove user roles from _users db
       // find user in _users
-      _usersDb.list({include_docs: true}, function (error, body) {
-        if (error) { return console.log('error getting list of _users: ', error) }
+      _usersDb.list({ include_docs: true }, function(error, body) {
+        if (error) {
+          return console.log('error getting list of _users: ', error)
+        }
 
-        var userRow,
-          userDoc
+        var userRow, userDoc
 
-        userRow = _.find(body.rows, function (row) {
+        userRow = _.find(body.rows, function(row) {
           // there seems to be a design doc in the _users db
           // return only docs with id beginning with org.couchdb.user:
           if (row.id.substring(0, 17) === 'org.couchdb.user:') {
@@ -64,12 +69,17 @@ module.exports = function (change) {
           userDoc.roles = []
           // pass global to handleChangesIn_usersDb as marker to not recreate userDb
           GLOBAL.deleteUserDb = true
-          _usersDb.insert(userDoc, function (error) {
-            if (error) { return console.log('handleDbChanges: error inserting userDoc:', error) }
+          _usersDb.insert(userDoc, function(error) {
+            if (error) {
+              return console.log(
+                'handleDbChanges: error inserting userDoc:',
+                error,
+              )
+            }
           })
           // remove all the user's projectDb's
           if (userName && projects) {
-            removeUsersProjectDbs(userName, projects)
+            removeUsersProjectDbs(nano, userName, projects)
           }
         }
       })
