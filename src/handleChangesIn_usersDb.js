@@ -86,6 +86,7 @@ module.exports = async change => {
     securityDoc.members.names = without(securityDoc.members.names, userName)
     return
   }
+
   // change.deleted is false
   // PROBLEM: userDb gets created when userDb was removed,
   // because the roles are then removed from _users db
