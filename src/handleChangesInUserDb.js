@@ -7,68 +7,56 @@
  *   - if roles have changed: update roles in _users db
  */
 
-'use strict'
-
-const _ = require('lodash')
+const dbUrl = require('./dbUrl')
+const nano = require('nano')(dbUrl())
 const createProjectDb = require('./createProjectDb')
 const updateUserDoc = require('./updateUserDoc')
 
 module.exports = async (userDb, change) => {
   var newDoc = change.doc
 
-  // console.log('handleChangesInUserDb: newDoc: ', newDoc)
-
   // check the revs
-  userDb.get(change.id, { revs_info: true }, function(error, doc) {
-    if (error) {
-      return console.log('error getting revs of doc: ', error)
+  let userDoc
+  try {
+    userDoc = await userDb.get(change.id, { revs_info: true })
+  } catch (error) {
+    return console.log('error getting revs of doc:', error)
+  }
+  const revisions = userDoc._revs_info
+
+  if (revisions.length === 1) {
+    // this is a new user doc
+    // there will be no roles yet
+    // well, make shure
+    if (newDoc.roles && newDoc.roles.length > 0) {
+      newDoc.roles.forEach(role => createProjectDb(nano, role))
+      return console.log("new user doc, set it's roles")
     }
+    return console.log('new user doc, not setting roles')
+  }
 
-    var revisions = doc._revs_info,
-      revOfOldDoc
-
-    // console.log('handleChangesInUserDb: change: ', change)
-    // console.log('handleChangesInUserDb: revisions: ', revisions)
-
-    if (revisions.length === 1) {
-      // this is a new user doc
-      // there will be no roles yet
-      // well, make shure
-      if (newDoc.roles && newDoc.roles.length > 0) {
-        _.each(newDoc.roles, function(roleAdded) {
-          createProjectDb(roleAdded)
-        })
-        return console.log("new user doc, set it's roles")
-      }
-      return console.log('new user doc, not setting roles')
+  // get last version
+  const revOfOldDoc = revisions[1].rev
+  let oldUserDoc
+  try {
+    oldUserDoc = await userDb.get(change.id, { rev: revOfOldDoc })
+  } catch (error) {
+    if (error.statusCode === 404) {
+      // old doc not found
+      return updateUserDoc(newDoc, null)
     }
-
-    // get last version
-    revOfOldDoc = revisions[1].rev
-    userDb.get(change.id, { rev: revOfOldDoc }, function(error, oldDoc) {
-      if (error) {
-        if (error.statusCode === 404) {
-          // old doc not found
-          return updateUserDoc(newDoc, null)
-        }
-        return console.log('error getting last version of user doc: ', error)
-      }
-
-      // console.log('handleChangesInUserDb: oldDoc: ', oldDoc)
-
-      // compare with last version
-      if (
-        oldDoc &&
-        oldDoc.roles &&
-        newDoc.roles &&
-        oldDoc.roles !== newDoc.roles
-      ) {
-        // roles have changed
-        // always update roles in _users DB
-        updateUserDoc(newDoc, oldDoc)
-      }
-
-      // TODO: make shure other changes to userDoc are copied to _users doc
-    })
-  })
+    return console.log('error getting last version of user doc: ', error)
+  }
+  // compare with last version
+  if (
+    oldUserDoc &&
+    oldUserDoc.roles &&
+    newDoc.roles &&
+    oldUserDoc.roles !== newDoc.roles
+  ) {
+    // roles have changed
+    // always update roles in _users DB
+    updateUserDoc(newDoc, oldUserDoc)
+  }
+  // TODO: make shure other changes to userDoc are copied to _users doc
 }

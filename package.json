@@ -16,6 +16,9 @@
     "lodash": "4.17.11",
     "nano": "7.1.0"
   },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
     "eslint": "^4.1.1",

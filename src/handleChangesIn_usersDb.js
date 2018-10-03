@@ -8,12 +8,11 @@
  * if no other user uses them
  */
 
-'use strict'
+
 
 const dbUrl = require('./dbUrl')
 const nano = require('nano')(dbUrl())
 const without = require('lodash/without')
-const contains = require('lodash/contains')
 
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')
 const deleteDatabase = require('./deleteDatabase')
