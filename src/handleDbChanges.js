@@ -5,7 +5,7 @@
  *   and the corresponding projectDb's removed if no other user uses them
  */
 
-'use strict'
+
 
 var couchPassfile = require('../couchpass.json'),
   dbUrl =
@@ -17,7 +17,7 @@ var couchPassfile = require('../couchpass.json'),
   nano = require('nano')(dbUrl),
   _ = require('underscore'),
   _usersDb = nano.use('_users'),
-  getUserDbName = require('./getUserDbName'),
+  userDbNameFromUserName = require('./userDbNameFromUserName'),
   removeUsersProjectDbs = require('./removeUsersProjectDbs')
 
 module.exports = function(change) {
@@ -55,7 +55,7 @@ module.exports = function(change) {
           // there seems to be a design doc in the _users db
           // return only docs with id beginning with org.couchdb.user:
           if (row.id.substring(0, 17) === 'org.couchdb.user:') {
-            return getUserDbName(row.doc.name) === dbName
+            return userDbNameFromUserName(row.doc.name) === dbName
           }
         })
         if (userRow) {

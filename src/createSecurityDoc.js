@@ -6,9 +6,7 @@
  * so users with the role can't change design docs
  */
 
-'use strict'
-
-var couchPassfile = require('../couchpass.json')
+var couchPassfile = require('../couchPass.json')
 
 module.exports = (names = [], roles = [], admin = couchPassfile.user) => ({
   admins: {
