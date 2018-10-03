@@ -7,7 +7,7 @@
 
 const createSecurityDoc = require('./createSecurityDoc')
 
-module.exports = (nano, projectDbName) => {
+module.exports = async (nano, projectDbName) => {
   // create new projectDb's if it doesn't exist yet
   // get list of DB's in couch
   let dbNames
