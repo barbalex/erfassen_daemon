@@ -27,7 +27,7 @@ module.exports = async (userName, userDbName, userDoc) => {
     await userDb.insert(securityDoc, '_security')
   } catch (error) {
     return console.log(
-      'handleChangesIn_usersDb: error setting _security in new user DB: ',
+      'handleChangesIn_usersDb: error setting _security in new user DB:',
       error,
     )
   }

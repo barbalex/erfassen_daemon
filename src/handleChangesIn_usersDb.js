@@ -26,18 +26,18 @@ module.exports = async change => {
       .get(change.id, { revs: true, open_revs: 'all' })
   } catch (error) {
     return console.log(
-      'handleChangesIn_usersDb: error getting revs of doc: ',
+      'handleChangesIn_usersDb: error getting revs of doc:',
       error,
     )
   }
   const revisions = revisionsBody[0].ok._revisions
-  const revOfOldDoc = revisions.start - 1 + '-' + revisions.ids[1]
+  const revOfOldDoc = `${revisions.start - 1}-${revisions.ids[1]}`
   const messageDb = nano.use('erfassen_messages')
 
-  // a new user was created, an existing changed or deleted
+  // was created, changed or deleted
   if (change.deleted) {
     // user was deleted > no doc in change
-    // get last doc version before deleted to know the user.name and user.roles
+    // get last doc version before deleted to know the user.name
     let doc
     try {
       doc = await nano.use('_users').get(change.id, { rev: revOfOldDoc })
@@ -55,15 +55,16 @@ module.exports = async change => {
 
     // a user was deleted
     const userName = doc.name
-    const userProjects = doc.roles
     const userDbName = userDbNameFromUserName(userName)
+
+    // TODO: 2.1. remove user from projects
+
+    // delete this user's db
+    deleteDatabase(nano, userDbName)
 
     // remove the role from all the users docs
     // remove projects and their db's that only had this user
-    removeUsersProjectDbs(nano, userName, userProjects)
-
-    // delete this user's database
-    deleteDatabase(nano, userDbName)
+    removeUsersProjectDbs(nano, userName)
 
     // stop listening to changes to userDb
     if (GLOBAL[userDbName]) {
@@ -91,6 +92,7 @@ module.exports = async change => {
   // PROBLEM: userDb gets created when userDb was removed,
   // because the roles are then removed from _users db
   // solution: handleDbChanges passes GLOBAL.deleteUserDb
+  // TODO: is this still so?
   if (GLOBAL.deleteUserDb) {
     return delete GLOBAL.deleteUserDb
   }

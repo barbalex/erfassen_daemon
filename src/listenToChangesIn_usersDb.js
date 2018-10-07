@@ -15,6 +15,7 @@ module.exports = nano => {
   })
   feed.on('change', handleChangesIn_usersDb)
   feed.follow()
+  // make sure that follow is only called once
   GLOBAL._users = feed
   // output result
   console.log('listening to changes in _users')
