@@ -24,7 +24,7 @@ module.exports = async (nano, projectDbName) => {
   console.log('created new db:', projectDbName)
 
   // set up permissions for this role
-  const securityDoc = createSecurityDoc(null, projectDbName)
+  //const securityDoc = createSecurityDoc(null, projectDbName)
   try {
     await nano.use(projectDbName).insert(securityDoc)
   } catch (error) {

@@ -10,7 +10,7 @@
 
 const couchUrl = require('./couchUrl')
 const nano = require('nano')(couchUrl)
-const without = require('lodash/without')
+const get = require('lodash/get')
 
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')
 const deleteDatabase = require('./deleteDatabase')
@@ -61,7 +61,7 @@ module.exports = async change => {
     const userName = doc.name
     console.log('handleChangesIn_usersDb', { userName })
     const userDbName = userDbNameFromUserName(userName)
-    console.log('handleChangesIn_usersDb', { userDbNameFromUserName })
+    console.log('handleChangesIn_usersDb', { userDbName })
 
     // TODO: 2.1. remove user from projects
 
@@ -91,10 +91,15 @@ module.exports = async change => {
       )
     }
     console.log('handleChangesIn_usersDb', { mDbSecurityDoc })
-    mDbSecurityDoc.members.names = without(
-      mDbSecurityDoc.members.names,
-      userName,
-    )
+    const memberNames = get(mDbSecurityDoc, 'members.names')
+    if (!memberNames) {
+      // there was no security doc
+      return
+    }
+    mDbSecurityDoc.members.names = memberNames.filter(name => name !== userName)
+    console.log('handleChangesIn_usersDb', {
+      memberNames: get(mDbSecurityDoc, 'members.names'),
+    })
     try {
       await messageDb.put(mDbSecurityDoc)
     } catch (error) {
@@ -128,7 +133,7 @@ module.exports = async change => {
   })
   const userDbName = userDbNameFromUserName(userDoc.name)
   console.log('handleChangesIn_usersDb', {
-    userDbNameFromUserName,
+    userDbName,
   })
   // get list of all databases
   let dbNames

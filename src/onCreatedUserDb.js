@@ -23,12 +23,13 @@ module.exports = async (userName, userDbName, userDoc) => {
   // create security doc
   // dont check if it exist yet - it always exists
   // just make sure it's set correctly
-  const securityDoc = createSecurityDoc(userName, null)
+  const securityDoc = createSecurityDoc({ names: [userName] })
+  console.log('onCreateUserDb', { securityDoc })
   try {
     await userDb.insert(securityDoc, '_security')
   } catch (error) {
     return console.log(
-      'handleChangesIn_usersDb: error setting _security in new user DB:',
+      'onCreateUserDb: error setting _security in new user DB:',
       error,
     )
   }
@@ -44,16 +45,20 @@ module.exports = async (userName, userDbName, userDoc) => {
   delete userDoc.derived_key
   delete userDoc.iterations
   delete userDoc.password_scheme
+  delete userDoc.roles
 
   // add list of all projects, the user is listed as member in
   let projectDbNames
   try {
-    projectDbNames = await nano.db
-      .list()
-      .filter(dbName => startsWith(dbName, 'project_'))
+    projectDbNames = await nano.db.list()
   } catch (error) {
     return console.log('onCreatedUserDb: error getting list of dbs:', error)
   }
+  console.log('onCreateUserDb', { projectDbNames })
+  projectDbNames = projectDbNames.filter(dbName =>
+    startsWith(dbName, 'project_'),
+  )
+  console.log('onCreateUserDb', { projectDbNames })
   let usersProjects = []
   for (const projectDbName of projectDbNames) {
     let securityDoc
@@ -67,6 +72,7 @@ module.exports = async (userName, userDbName, userDoc) => {
       usersProjects.push(projectDbName)
     }
   }
+  console.log('onCreateUserDb', { usersProjects })
   userDoc.projects = usersProjects
 
   // make sure userDoc does not exist yet

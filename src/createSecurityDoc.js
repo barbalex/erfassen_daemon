@@ -8,7 +8,7 @@
 
 var couchPass = require('../couchPass.json')
 
-module.exports = (names, roles, admin) => ({
+module.exports = ({ names, roles, admin }) => ({
   admins: {
     names: admin ? [admin] : [couchPass.user],
     roles: [],
