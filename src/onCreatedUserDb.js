@@ -10,6 +10,8 @@
 
 const dbUrl = require('./dbUrl')
 const nano = require('nano')(dbUrl())
+const startsWith = require('lodash/startsWith')
+const get = require('lodash/get')
 
 const listenToChangesInUsersDbs = require('./listenToChangesInUsersDbs')
 const createSecurityDoc = require('./createSecurityDoc')
@@ -43,8 +45,29 @@ module.exports = async (userName, userDbName, userDoc) => {
   delete userDoc.iterations
   delete userDoc.password_scheme
 
-  // TODO: add list of all projects, the user is listed as member in
-  // maybe roles are better because loading all projects does not scale?
+  // add list of all projects, the user is listed as member in
+  let projectDbNames
+  try {
+    projectDbNames = await nano.db
+      .list()
+      .filter(dbName => startsWith(dbName, 'project_'))
+  } catch (error) {
+    return console.log('onCreatedUserDb: error getting list of dbs:', error)
+  }
+  let usersProjects = []
+  for (const projectDbName of projectDbNames) {
+    let securityDoc
+    try {
+      securityDoc = await nano.use(projectDbName).get('_security')
+    } catch (error) {
+      console.log('onCreatedUserDb: error getting _security of db:', error)
+    }
+    const memberNames = get(securityDoc, 'members.names', [])
+    if (memberNames.includes(userName)) {
+      usersProjects.push(projectDbName)
+    }
+  }
+  userDoc.projects = usersProjects
 
   // make sure userDoc does not exist yet
   try {
@@ -52,16 +75,17 @@ module.exports = async (userName, userDbName, userDoc) => {
   } catch (error) {
     if (error.statusCode !== 404) {
       return console.log(
-        `handleChangesIn_usersDb: error getting user doc of new user DB ${userDbName}:`,
+        `onCreatedUserDb: error getting user doc of new user DB ${userDbName}:`,
         error,
       )
     }
-    // error 404: userDoc does not exist yet
+    // error is 404: userDoc does not exist yet
+    // so insert it
     try {
       await userDb.insert(userDoc)
     } catch (error) {
       return console.log(
-        `handleChangesIn_usersDb: error adding user doc to new user DB ${userDbName}:`,
+        `onCreatedUserDb: error adding user doc to new user DB ${userDbName}:`,
         error,
       )
     }

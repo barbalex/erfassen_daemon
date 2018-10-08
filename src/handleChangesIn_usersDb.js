@@ -121,7 +121,7 @@ module.exports = async change => {
       error,
     )
   }
-  if (!dbNames.includes(module.exports = async (nano, userName, projects) => {Name)) {
+  if (!dbNames.includes(userDbName) {
     // this user has no userDb yet
     // a new user was created
     // create a new user db if it does not exist yet
