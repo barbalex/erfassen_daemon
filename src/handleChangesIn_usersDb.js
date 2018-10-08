@@ -67,8 +67,8 @@ module.exports = async change => {
     removeUsersProjectDbs(nano, userName)
 
     // stop listening to changes to userDb
-    if (GLOBAL[userDbName]) {
-      GLOBAL[userDbName].stop()
+    if (global[userDbName]) {
+      global[userDbName].stop()
       console.log(
         `handleChangesIn_usersDb: stopped listening to feed of ${userDbName}`,
       )
@@ -102,10 +102,10 @@ module.exports = async change => {
   // change.deleted is false
   // PROBLEM: userDb gets created when userDb was removed,
   // because the roles are then removed from _users db
-  // solution: handleDbChanges passes GLOBAL.deleteUserDb
+  // solution: handleDbChanges passes global.deleteUserDb
   // TODO: is this still so?
-  if (GLOBAL.deleteUserDb) {
-    return delete GLOBAL.deleteUserDb
+  if (global.deleteUserDb) {
+    return delete global.deleteUserDb
   }
 
   const userDoc = change.doc
@@ -121,7 +121,7 @@ module.exports = async change => {
       error,
     )
   }
-  if (!dbNames.includes(userDbName) {
+  if (!dbNames.includes(userDbName)) {
     // this user has no userDb yet
     // a new user was created
     // create a new user db if it does not exist yet

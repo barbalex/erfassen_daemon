@@ -20,10 +20,10 @@ module.exports = async change => {
 
   console.log('handleDbChanges: db change: ', change)
 
-  if (GLOBAL[dbName]) {
+  if (global[dbName]) {
     console.log('handleDbChanges: Removing feed following changes in ' + dbName)
     // stop feed following the db
-    GLOBAL[dbName].stop()
+    global[dbName].stop()
   }
 
   // onloy continue for user db's
@@ -53,7 +53,7 @@ module.exports = async change => {
   const userName = userDoc.name
   userDoc.roles = []
   // pass global to handleChangesIn_usersDb as marker to not recreate userDb
-  GLOBAL.deleteUserDb = true
+  global.deleteUserDb = true
   try {
     await _usersDb.insert(userDoc)
   } catch (error) {

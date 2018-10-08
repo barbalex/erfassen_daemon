@@ -26,8 +26,8 @@ module.exports = async (nano, dbName) => {
     return console.log(`db ${dbName} not deleted because used by other user`)
   }
   // stop listening to changes
-  if (GLOBAL[dbName]) {
-    GLOBAL[dbName].stop()
+  if (global[dbName]) {
+    global[dbName].stop()
     console.log(`deleteDatabase: stopped listening to feed of ${dbName}`)
   }
   try {

@@ -6,11 +6,11 @@
 const handleDbChanges = require('./handleDbChanges')
 
 module.exports = nano => {
-  if (GLOBAL.dbUpdates) return
+  if (global.dbUpdates) return
 
   const feed = nano.followUpdates({ since: 'now' })
   feed.on('change', handleDbChanges)
   feed.follow()
-  GLOBAL.dbUpdates = feed
+  global.dbUpdates = feed
   console.log("listening to changes in db's")
 }

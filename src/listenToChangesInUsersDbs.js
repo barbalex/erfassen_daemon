@@ -9,7 +9,7 @@ module.exports = (nano, userDbs) => {
   // start listening to changes in all project-dbs
   userDbs.forEach(userDb => {
     // make sure the feed does not exist yet
-    if (GLOBAL[userDb]) return
+    if (global[userDb]) return
 
     const feed = nano.use(userDb).follow({
       since: 'now',
@@ -21,7 +21,7 @@ module.exports = (nano, userDbs) => {
     })
     feed.follow()
     // give the feed a name so it can later be stopped
-    GLOBAL[userDb] = feed
+    global[userDb] = feed
     // output result
     console.log('listening to changes in', userDb)
   })

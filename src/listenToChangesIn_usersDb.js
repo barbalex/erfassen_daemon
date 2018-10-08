@@ -6,7 +6,7 @@
 const handleChangesIn_usersDb = require('./handleChangesIn_usersDb')
 
 module.exports = nano => {
-  if (GLOBAL._users) return
+  if (global._users) return
 
   const feed = nano.use('_users').follow({
     since: 'now',
@@ -16,7 +16,7 @@ module.exports = nano => {
   feed.on('change', handleChangesIn_usersDb)
   feed.follow()
   // make sure that follow is only called once
-  GLOBAL._users = feed
+  global._users = feed
   // output result
   console.log('listening to changes in _users')
 }

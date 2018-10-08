@@ -36,7 +36,8 @@ module.exports = async (userName, userDbName, userDoc) => {
 
   // start listening to changes
   // start before inserting doc so the changes in roles are watched
-  listenToChangesInUsersDbs([userDbName])
+  // TODO: enable this
+  // listenToChangesInUsersDbs(nano, [userDbName])
 
   // add the user as doc, without rev and some other fields
   delete userDoc._rev
