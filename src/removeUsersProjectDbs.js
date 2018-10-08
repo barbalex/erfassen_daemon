@@ -5,7 +5,7 @@
 
 const deleteDatabase = require('./deleteDatabase')
 
-module.exports = async (nano, userName, projects) => {
+module.exports = async (nano, userName) => {
   let dbNames
   try {
     dbNames = await nano.db.list()

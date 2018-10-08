@@ -30,14 +30,14 @@ module.exports = async change => {
       error,
     )
   }
-  const revisions = revisionsBody[0].ok._revisions
-  const revOfOldDoc = `${revisions.start - 1}-${revisions.ids[1]}`
   const messageDb = nano.use('erfassen_messages')
 
   // was created, changed or deleted
   if (change.deleted) {
     // user was deleted > no doc in change
     // get last doc version before deleted to know the user.name
+    const revisions = revisionsBody[0].ok._revisions
+    const revOfOldDoc = `${revisions.start - 1}-${revisions.ids[1]}`
     let doc
     try {
       doc = await nano.use('_users').get(change.id, { rev: revOfOldDoc })
@@ -75,16 +75,27 @@ module.exports = async change => {
     }
 
     // remove user from members of message db
-    let securityDoc
+    let mDbSecurityDoc
     try {
-      securityDoc = await messageDb.get('_security')
+      mDbSecurityDoc = await messageDb.get('_security')
     } catch (error) {
       console.log(
         'handleChangesIn_usersDb: error getting _security of message db:',
         error,
       )
     }
-    securityDoc.members.names = without(securityDoc.members.names, userName)
+    mDbSecurityDoc.members.names = without(
+      mDbSecurityDoc.members.names,
+      userName,
+    )
+    try {
+      await messageDb.put(mDbSecurityDoc)
+    } catch (error) {
+      console.log(
+        'handleChangesIn_usersDb: error putting _security of message db:',
+        error,
+      )
+    }
     return
   }
 
@@ -110,7 +121,7 @@ module.exports = async change => {
       error,
     )
   }
-  if (!dbNames.includes(userDbName)) {
+  if (!dbNames.includes(module.exports = async (nano, userName, projects) => {Name)) {
     // this user has no userDb yet
     // a new user was created
     // create a new user db if it does not exist yet

@@ -43,6 +43,9 @@ module.exports = async (userName, userDbName, userDoc) => {
   delete userDoc.iterations
   delete userDoc.password_scheme
 
+  // TODO: add list of all projects, the user is listed as member in
+  // maybe roles are better because loading all projects does not scale?
+
   // make sure userDoc does not exist yet
   try {
     await userDb.get(userDoc._id)
