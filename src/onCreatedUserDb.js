@@ -8,8 +8,8 @@
  * if no other user uses them
  */
 
-const dbUrl = require('./dbUrl')
-const nano = require('nano')(dbUrl())
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl())
 const startsWith = require('lodash/startsWith')
 const get = require('lodash/get')
 

@@ -5,8 +5,8 @@
  *   and the corresponding projectDb's removed if no other user uses them
  */
 
-const dbUrl = require('./dbUrl')
-const nano = require('nano')(dbUrl())
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl())
 const userDbNameFromUserName = require('./userDbNameFromUserName')
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')
 const _usersDb = nano.use('_users')

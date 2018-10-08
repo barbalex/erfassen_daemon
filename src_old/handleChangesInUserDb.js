@@ -7,8 +7,8 @@
  *   - if roles have changed: update roles in _users db
  */
 
-const dbUrl = require('./dbUrl')
-const nano = require('nano')(dbUrl())
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl())
 const createProjectDb = require('./createProjectDb')
 const updateUserDoc = require('./updateUserDoc')
 

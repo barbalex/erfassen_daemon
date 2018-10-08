@@ -1,5 +1,5 @@
-const dbUrl = require('./src/dbUrl')
-const nano = require('nano')(dbUrl())
+const couchUrl = require('./src/couchUrl')
+const nano = require('nano')(couchUrl())
 
 const listenToChangesIn_usersDb = require('./src/listenToChangesIn_usersDb')
 

@@ -5,8 +5,8 @@
  * - remove message doc
  */
 
-const dbUrl = require('./dbUrl')
-const nano = require('nano')(dbUrl())
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl())
 const createProjectDb = require('./createProjectDb')
 
 module.exports = async change => {
