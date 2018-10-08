@@ -4,7 +4,6 @@
  */
 
 const createSecurityDoc = require('./createSecurityDoc')
-const couchPassfile = require('../couchPass.json')
 
 module.exports = async (nano, projectDbName) => {
   // create new projectDb's if it doesn't exist yet
@@ -25,7 +24,7 @@ module.exports = async (nano, projectDbName) => {
   console.log('created new db:', projectDbName)
 
   // set up permissions for this role
-  const securityDoc = createSecurityDoc(null, projectDbName, couchPassfile.user)
+  const securityDoc = createSecurityDoc(null, projectDbName)
   try {
     await nano.use(projectDbName).insert(securityDoc)
   } catch (error) {

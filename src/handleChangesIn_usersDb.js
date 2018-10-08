@@ -18,6 +18,7 @@ const userDbNameFromUserName = require('./userDbNameFromUserName')
 const onCreatedUserDb = require('./onCreatedUserDb')
 
 module.exports = async change => {
+  console.log('handleChangesIn_usersDb', { change })
   // check the revs
   let revisionsBody
   try {
@@ -31,6 +32,7 @@ module.exports = async change => {
     )
   }
   const messageDb = nano.use('erfassen_messages')
+  console.log('handleChangesIn_usersDb', { revisionsBody, messageDb })
 
   // was created, changed or deleted
   if (change.deleted) {
@@ -38,6 +40,7 @@ module.exports = async change => {
     // get last doc version before deleted to know the user.name
     const revisions = revisionsBody[0].ok._revisions
     const revOfOldDoc = `${revisions.start - 1}-${revisions.ids[1]}`
+    console.log('handleChangesIn_usersDb', { revOfOldDoc, revisions })
     let doc
     try {
       doc = await nano.use('_users').get(change.id, { rev: revOfOldDoc })
@@ -51,11 +54,14 @@ module.exports = async change => {
         error,
       )
     }
+    console.log('handleChangesIn_usersDb', { doc })
     if (!doc) return
 
     // a user was deleted
     const userName = doc.name
+    console.log('handleChangesIn_usersDb', { userName })
     const userDbName = userDbNameFromUserName(userName)
+    console.log('handleChangesIn_usersDb', { userDbNameFromUserName })
 
     // TODO: 2.1. remove user from projects
 
@@ -84,6 +90,7 @@ module.exports = async change => {
         error,
       )
     }
+    console.log('handleChangesIn_usersDb', { mDbSecurityDoc })
     mDbSecurityDoc.members.names = without(
       mDbSecurityDoc.members.names,
       userName,
@@ -104,13 +111,25 @@ module.exports = async change => {
   // because the roles are then removed from _users db
   // solution: handleDbChanges passes global.deleteUserDb
   // TODO: is this still so?
+  console.log('handleChangesIn_usersDb', {
+    globalDeleteUserDb: global.deleteUserDb,
+  })
   if (global.deleteUserDb) {
     return delete global.deleteUserDb
   }
 
   const userDoc = change.doc
+  console.log('handleChangesIn_usersDb', {
+    userDoc,
+  })
   const userName = userDoc.name
+  console.log('handleChangesIn_usersDb', {
+    userName,
+  })
   const userDbName = userDbNameFromUserName(userDoc.name)
+  console.log('handleChangesIn_usersDb', {
+    userDbNameFromUserName,
+  })
   // get list of all databases
   let dbNames
   try {
@@ -121,6 +140,9 @@ module.exports = async change => {
       error,
     )
   }
+  console.log('handleChangesIn_usersDb', {
+    dbNames,
+  })
   if (!dbNames.includes(userDbName)) {
     // this user has no userDb yet
     // a new user was created
@@ -138,6 +160,9 @@ module.exports = async change => {
         )
       }
     }
+    console.log(
+      `handleChangesIn_usersDb: userDb ${userDbName} created for user ${userName}`,
+    )
   }
   onCreatedUserDb(userName, userDbName, userDoc)
 }

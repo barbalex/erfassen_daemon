@@ -13,9 +13,8 @@ const nano = require('nano')(couchUrl)
 const startsWith = require('lodash/startsWith')
 const get = require('lodash/get')
 
-const listenToChangesInUsersDbs = require('./listenToChangesInUsersDbs')
+// const listenToChangesInUsersDbs = require('./listenToChangesInUsersDbs')
 const createSecurityDoc = require('./createSecurityDoc')
-const couchPassfile = require('../couchPass.json')
 
 module.exports = async (userName, userDbName, userDoc) => {
   const userDb = nano.use(userDbName)
@@ -24,7 +23,7 @@ module.exports = async (userName, userDbName, userDoc) => {
   // create security doc
   // dont check if it exist yet - it always exists
   // just make sure it's set correctly
-  const securityDoc = createSecurityDoc(userName, null, couchPassfile.user)
+  const securityDoc = createSecurityDoc(userName, null)
   try {
     await userDb.insert(securityDoc, '_security')
   } catch (error) {
