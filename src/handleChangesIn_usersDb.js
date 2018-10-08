@@ -9,7 +9,7 @@
  */
 
 const couchUrl = require('./couchUrl')
-const nano = require('nano')(couchUrl())
+const nano = require('nano')(couchUrl)
 const without = require('lodash/without')
 
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')

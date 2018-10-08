@@ -8,7 +8,7 @@
  */
 
 const couchUrl = require('./couchUrl')
-const nano = require('nano')(couchUrl())
+const nano = require('nano')(couchUrl)
 const createProjectDb = require('./createProjectDb')
 const updateUserDoc = require('./updateUserDoc')
 

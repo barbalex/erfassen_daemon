@@ -1,7 +1,7 @@
 'use strict'
 
 const couchUrl = require('./src/couchUrl')
-const nano = require('nano')(couchUrl())
+const nano = require('nano')(couchUrl)
 const filter = require('lodash/filter')
 
 const listenToChangesIn_usersDb = require('./src/listenToChangesIn_usersDb')

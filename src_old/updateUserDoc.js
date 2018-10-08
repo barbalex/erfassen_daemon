@@ -8,7 +8,7 @@
  */
 
 const couchUrl = require('./couchUrl')
-const nano = require('nano')(couchUrl())
+const nano = require('nano')(couchUrl)
 const difference = require('lodash/difference')
 const _usersDb = nano.use('_users')
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')

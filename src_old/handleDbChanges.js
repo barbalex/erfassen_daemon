@@ -6,7 +6,7 @@
  */
 
 const couchUrl = require('./couchUrl')
-const nano = require('nano')(couchUrl())
+const nano = require('nano')(couchUrl)
 const userDbNameFromUserName = require('./userDbNameFromUserName')
 const removeUsersProjectDbs = require('./removeUsersProjectDbs')
 const _usersDb = nano.use('_users')
