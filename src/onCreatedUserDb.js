@@ -24,7 +24,7 @@ module.exports = async (userName, userDbName, userDoc) => {
   // dont check if it exist yet - it always exists
   // just make sure it's set correctly
   const securityDoc = createSecurityDoc({ names: [userName] })
-  console.log('onCreateUserDb', { securityDoc })
+  // console.log('onCreateUserDb', { securityDoc })
   try {
     await userDb.insert(securityDoc, '_security')
   } catch (error) {
@@ -54,11 +54,11 @@ module.exports = async (userName, userDbName, userDoc) => {
   } catch (error) {
     return console.log('onCreatedUserDb: error getting list of dbs:', error)
   }
-  console.log('onCreateUserDb', { projectDbNames })
+  // console.log('onCreateUserDb', { projectDbNames })
   projectDbNames = projectDbNames.filter(dbName =>
     startsWith(dbName, 'project_'),
   )
-  console.log('onCreateUserDb', { projectDbNames })
+  // console.log('onCreateUserDb', { projectDbNames })
   let usersProjects = []
   for (const projectDbName of projectDbNames) {
     let securityDoc
@@ -72,7 +72,7 @@ module.exports = async (userName, userDbName, userDoc) => {
       usersProjects.push(projectDbName)
     }
   }
-  console.log('onCreateUserDb', { usersProjects })
+  // console.log('onCreateUserDb', { usersProjects })
   userDoc.projects = usersProjects
 
   // make sure userDoc does not exist yet
