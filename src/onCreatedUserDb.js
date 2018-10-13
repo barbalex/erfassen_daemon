@@ -25,6 +25,8 @@ module.exports = async (userName, userDbName, userDoc) => {
   // just make sure it's set correctly
   const securityDoc = createSecurityDoc({ names: [userName] })
   // console.log('onCreateUserDb', { securityDoc })
+  // 2018 10 13: turned off because of PouchDB issue when cookies are not sent
+  /*
   try {
     await userDb.insert(securityDoc, '_security')
   } catch (error) {
@@ -32,7 +34,7 @@ module.exports = async (userName, userDbName, userDoc) => {
       'onCreateUserDb: error setting _security in new user DB:',
       error,
     )
-  }
+  }*/
 
   // start listening to changes
   // start before inserting doc so the changes in roles are watched
