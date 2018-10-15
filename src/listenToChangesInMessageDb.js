@@ -12,6 +12,7 @@ module.exports = () => {
   })
   feed.on('change', handleChangesInMessagesDb)
   feed.follow()
+  console.log('messages-feed:', feed)
   // make sure that follow is only called once
   global.messages = feed
   // output result
