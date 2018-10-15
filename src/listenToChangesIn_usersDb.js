@@ -3,9 +3,11 @@
  * handleChangesIn_usersDb keeps user docs in the oi db in sync
  */
 
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl)
 const handleChangesIn_usersDb = require('./handleChangesIn_usersDb')
 
-module.exports = nano => {
+module.exports = () => {
   if (global._users) return
 
   const feed = nano.use('_users').follow({

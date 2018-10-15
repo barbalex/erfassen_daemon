@@ -1,6 +1,8 @@
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl)
 const handleChangesInMessagesDb = require('./handleChangesInMessagesDb')
 
-module.exports = nano => {
+module.exports = () => {
   if (global.messages) return
 
   const feed = nano.use('messages').follow({

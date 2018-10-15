@@ -13,15 +13,25 @@ const nano = require('nano')(couchUrl)
 const get = require('lodash/get')
 
 const userDbNameFromUserName = require('./userDbNameFromUserName')
-const onCreatedUserDb = require('./onCreatedUserDb')
+const getProjectDbName = require('./getProjectDbName')
 
 module.exports = async change => {
+  console.log('handleChangesInMessagesDb, hi')
   const { doc } = change
+  console.log('handleChangesInMessagesDb', {
+    doc,
+    change,
+  })
   /*console.log('handleChangesInMessagesDb', {
     doc,
   })*/
   if (doc.type === 'projectDef') {
     const userName = doc.user
-    const userDbName = userDbNameFromUserName(doc.user)
+    //const userDbName = userDbNameFromUserName(doc.user)
+    const projectDbName = getProjectDbName({ userName, projectName: doc.name })
+    console.log('handleChangesInMessagesDb', {
+      doc,
+      projectDbName,
+    })
   }
 }
