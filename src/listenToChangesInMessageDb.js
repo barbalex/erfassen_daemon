@@ -3,6 +3,7 @@ const nano = require('nano')(couchUrl)
 const handleChangesInMessagesDb = require('./handleChangesInMessagesDb')
 
 module.exports = () => {
+  console.log('listenToChangesInMessageDb', { globalMessages: global.messages })
   if (global.messages) return
 
   const feed = nano.use('messages').follow({
@@ -11,8 +12,8 @@ module.exports = () => {
     include_docs: true,
   })
   feed.on('change', handleChangesInMessagesDb)
+  console.log('listenToChangesInMessageDb, on.change created')
   feed.follow()
-  console.log('messages-feed:', feed)
   // make sure that follow is only called once
   global.messages = feed
   // output result

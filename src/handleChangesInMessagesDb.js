@@ -12,15 +12,14 @@ const couchUrl = require('./couchUrl')
 const nano = require('nano')(couchUrl)
 const get = require('lodash/get')
 
-const userDbNameFromUserName = require('./userDbNameFromUserName')
+//const userDbNameFromUserName = require('./userDbNameFromUserName')
 const getProjectDbName = require('./getProjectDbName')
 
 module.exports = async change => {
-  console.log('handleChangesInMessagesDb, hi')
+  console.log('handleChangesInMessagesDb', { change })
   const { doc } = change
   console.log('handleChangesInMessagesDb', {
     doc,
-    change,
   })
   /*console.log('handleChangesInMessagesDb', {
     doc,
@@ -30,7 +29,6 @@ module.exports = async change => {
     //const userDbName = userDbNameFromUserName(doc.user)
     const projectDbName = getProjectDbName({ userName, projectName: doc.name })
     console.log('handleChangesInMessagesDb', {
-      doc,
       projectDbName,
     })
   }
