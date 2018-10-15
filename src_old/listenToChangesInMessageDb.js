@@ -1,20 +1,20 @@
 /*
- * listens to changes in the erfassen_messages db
+ * listens to changes in the messages db
  */
 
 const handleChangesInMessageDb = require('./handleChangesInMessageDb')
 
 module.exports = function(nano) {
-  if (global.erfassen_messages) return
+  if (global.messages) return
 
-  const feed = nano.use('erfassen_messages').follow({
+  const feed = nano.use('messages').follow({
     since: 'now',
     live: true,
     include_docs: true,
   })
   feed.on('change', handleChangesInMessageDb)
   feed.follow()
-  global.erfassen_messages = feed
+  global.messages = feed
   // output result
-  console.log('listening to changes in erfassen_messages')
+  console.log('listening to changes in messages')
 }

@@ -17,7 +17,7 @@ module.exports = async change => {
   createProjectDb(nano, doc.projectName)
   // now delete the message
   try {
-    await nano.use('erfassen_messages').destroy(doc, doc._rev)
+    await nano.use('messages').destroy(doc, doc._rev)
   } catch (error) {
     return console.log(
       'error removing doc after ordering to create project',

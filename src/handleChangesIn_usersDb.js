@@ -31,7 +31,7 @@ module.exports = async change => {
       error,
     )
   }
-  const messageDb = nano.use('erfassen_messages')
+  const messageDb = nano.use('messages')
   // console.log('handleChangesIn_usersDb', { revisionsBody, messageDb })
 
   // was created, changed or deleted

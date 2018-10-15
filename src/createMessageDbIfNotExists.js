@@ -8,11 +8,11 @@ module.exports = async () => {
   } catch (error) {
     console.log('createMessageDbIfNotExists, error listing dbs:', error)
   }
-  const existingMessageDb = dbs.find(db => db === 'erfassen_messages')
+  const existingMessageDb = dbs.find(db => db === 'messages')
   if (existingMessageDb) return
 
   try {
-    await nano.db.create('erfassen_messages')
+    await nano.db.create('messages')
   } catch (error) {
     console.log(
       'createMessageDbIfNotExists, error creating messages db:',
