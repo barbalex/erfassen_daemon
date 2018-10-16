@@ -1,14 +1,14 @@
-module.exports = ({ userName, projectName }) => {
-  const name =
+module.exports = ({ creatorName, projectName }) => {
+  const projectDbName =
     'project_' +
-    userName
+    creatorName
       .toLowerCase()
       .replace('@', '_at_')
       .replace('.', '_p_') +
     '_' +
     projectName
-  if (!/^[a-z][a-z0-9_$()+/-]*$/.test(name)) {
+  if (!/^[a-z][a-z0-9_$()+/-]*$/.test(projectDbName)) {
     return console.log('Name is not valid db name')
   }
-  return name
+  return projectDbName
 }

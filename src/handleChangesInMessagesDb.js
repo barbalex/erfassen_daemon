@@ -19,12 +19,16 @@ const getProjectDbName = require('./getProjectDbName')
 module.exports = async change => {
   const { doc } = change
   if (doc.type === 'projectDef') {
-    const userName = doc.user
+    const { creatorName, projectName, type } = doc
     //const userDbName = userDbNameFromUserName(doc.user)
-    const projectDbName = getProjectDbName({ userName, projectName: doc.name })
+    const projectDbName = getProjectDbName({ creatorName, projectName })
     /*console.log('handleChangesInMessagesDb', {
       projectDbName,
     })*/
-    createProjectDb(projectDbName)
+    await createProjectDb(projectDbName)
+    nano.use(projectDbName).insert({ creatorName, projectName, type })
+    console.log(
+      `handleChangesInMessagesDb: created new project db '${projectDbName}'`,
+    )
   }
 }
