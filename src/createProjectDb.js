@@ -2,10 +2,12 @@
  * creates a new projectDb
  * but only if it does not exist yet
  */
+const couchUrl = require('./couchUrl')
+const nano = require('nano')(couchUrl)
 
-const createSecurityDoc = require('./createSecurityDoc')
+//const createSecurityDoc = require('./createSecurityDoc')
 
-module.exports = async (nano, projectDbName) => {
+module.exports = async projectDbName => {
   // create new projectDb's if it doesn't exist yet
   // get list of DB's in couch
   let dbNames
@@ -24,7 +26,9 @@ module.exports = async (nano, projectDbName) => {
   console.log('created new db:', projectDbName)
 
   // set up permissions for this role
-  //const securityDoc = createSecurityDoc(null, projectDbName)
+  // 2018 10: turned off because pouchdb has error causing cookies not to be sent
+  /*
+  const securityDoc = createSecurityDoc(null, projectDbName)
   try {
     await nano.use(projectDbName).insert(securityDoc)
   } catch (error) {
@@ -32,5 +36,5 @@ module.exports = async (nano, projectDbName) => {
       `error setting _security in new db ${projectDbName}:`,
       error,
     )
-  }
+  }*/
 }
