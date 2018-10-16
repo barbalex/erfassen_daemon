@@ -22,9 +22,9 @@ module.exports = async change => {
     const userName = doc.user
     //const userDbName = userDbNameFromUserName(doc.user)
     const projectDbName = getProjectDbName({ userName, projectName: doc.name })
-    console.log('handleChangesInMessagesDb', {
+    /*console.log('handleChangesInMessagesDb', {
       projectDbName,
-    })
+    })*/
     createProjectDb(projectDbName)
   }
 }
