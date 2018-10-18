@@ -26,13 +26,13 @@ module.exports = async change => {
       projectDbName,
     })*/
     await createProjectDb(projectDbName)
-    nano
+    await nano
       .use(projectDbName)
       .insert({ _id: 'projectDef', creatorName, projectName, type })
     console.log(
       `handleChangesInMessagesDb: created new project db '${projectDbName}'`,
     )
-    nano.use('messages').destroy(doc._id, doc._rev)
+    await nano.use('messages').destroy(doc._id, doc._rev)
     console.log(`handleChangesInMessagesDb: removed message '${doc.type}'`)
   }
 }
